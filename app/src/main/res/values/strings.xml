@@ -3,4 +3,5 @@
     <string name="category">category</string>
     <string name="news">News</string>
     <string name="favorites">Favorites</string>
+    <string name="favoriteEmptyState">There is no any favorite news</string>
 </resources>

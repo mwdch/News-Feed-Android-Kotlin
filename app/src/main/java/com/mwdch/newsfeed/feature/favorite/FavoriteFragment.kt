@@ -51,7 +51,12 @@ class FavoriteFragment : Fragment(), FavoriteAdapter.OnFavoriteListener {
         }
 
         viewModel.newsLiveData.observe(viewLifecycleOwner) {
-            favoriteAdapter?.newsList = it as ArrayList<News>
+            if (it.isEmpty()) {
+                binding.emptyState.visibility = View.VISIBLE
+            } else {
+                favoriteAdapter?.newsList = it as ArrayList<News>
+                binding.emptyState.visibility = View.GONE
+            }
         }
 
         favoriteAdapter = FavoriteAdapter()
@@ -79,6 +84,9 @@ class FavoriteFragment : Fragment(), FavoriteAdapter.OnFavoriteListener {
 
     override fun onFavoriteDeleteClick(news: News) {
         viewModel.deleteFromFavorites(news)
+        if (favoriteAdapter?.newsList!!.size == 1) {
+            binding.emptyState.visibility = View.VISIBLE
+        }
     }
 
 }

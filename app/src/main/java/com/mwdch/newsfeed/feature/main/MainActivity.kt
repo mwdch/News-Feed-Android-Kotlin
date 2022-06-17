@@ -2,10 +2,12 @@ package com.mwdch.newsfeed.feature.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.tabs.TabLayout
 import com.mwdch.newsfeed.R
 import com.mwdch.newsfeed.feature.news.NewsFragment
 import com.mwdch.newsfeed.databinding.ActivityMainBinding
 import com.mwdch.newsfeed.feature.favorite.FavoriteFragment
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 

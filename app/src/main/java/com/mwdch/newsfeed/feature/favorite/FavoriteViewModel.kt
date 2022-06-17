@@ -19,10 +19,6 @@ class FavoriteViewModel(private val newsRepository: NewsRepository) :
     val progressBarLiveData = MutableLiveData<Boolean>()
     val compositeDisposable = CompositeDisposable()
 
-    init {
-        getFavorites()
-    }
-
     fun getFavorites() {
         progressBarLiveData.value = true
         newsRepository.getFavoriteNews()

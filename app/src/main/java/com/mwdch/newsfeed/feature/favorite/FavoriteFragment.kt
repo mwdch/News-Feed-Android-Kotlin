@@ -2,6 +2,7 @@ package com.mwdch.newsfeed.feature.favorite
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,8 @@ class FavoriteFragment : Fragment(), FavoriteAdapter.OnFavoriteListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.getFavorites()
 
         viewModel.progressBarLiveData.observe(viewLifecycleOwner) {
             if (it) {

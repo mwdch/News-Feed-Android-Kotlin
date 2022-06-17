@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +13,7 @@ import com.mwdch.newsfeed.common.EXTRA_KEY_DATA
 import com.mwdch.newsfeed.data.News
 import com.mwdch.newsfeed.databinding.FragmentNewsBinding
 import com.mwdch.newsfeed.feature.detail.NewsDetailActivity
+import com.mwdch.newsfeed.feature.favorite.FavoriteViewModel
 import io.reactivex.disposables.CompositeDisposable
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -23,7 +25,8 @@ class NewsFragment : Fragment(), NewsAdapter.OnNewsListener {
 
     private val compositeDisposable = CompositeDisposable()
 
-    private val viewModel: NewsViewModel by viewModel()
+    private val newsViewModel: NewsViewModel by viewModel()
+    private val favoriteViewModel: FavoriteViewModel by viewModel()
 
     private var newsAdapter: NewsAdapter? = null
 
@@ -38,7 +41,15 @@ class NewsFragment : Fragment(), NewsAdapter.OnNewsListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.progressBarLiveData.observe(viewLifecycleOwner) {
+        var scrolling = true
+
+        newsViewModel.messageLiveData.observe(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            if (it == "Connection error.")
+                scrolling = false
+        }
+
+        newsViewModel.progressBarLiveData.observe(viewLifecycleOwner) {
             if (it) {
                 binding.progressbar.visibility = View.VISIBLE
                 binding.rvNews.visibility = View.GONE
@@ -48,7 +59,7 @@ class NewsFragment : Fragment(), NewsAdapter.OnNewsListener {
             }
         }
 
-        viewModel.newsLiveData.observe(viewLifecycleOwner) {
+        newsViewModel.newsLiveData.observe(viewLifecycleOwner) {
             newsAdapter?.addNewsToExistingList(it)
         }
 
@@ -56,7 +67,8 @@ class NewsFragment : Fragment(), NewsAdapter.OnNewsListener {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1)) {
-                    viewModel.getNews()
+                    if (scrolling)
+                        newsViewModel.getNews()
                 }
             }
         })
@@ -86,7 +98,8 @@ class NewsFragment : Fragment(), NewsAdapter.OnNewsListener {
     }
 
     override fun onFavoriteClick(news: News) {
-        viewModel.addToFavorites(news)
+        newsViewModel.addToFavorites(news)
+        favoriteViewModel.getFavorites()
     }
 
 }

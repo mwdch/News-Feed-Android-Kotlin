@@ -16,6 +16,7 @@ class NewsViewModel(private val newsRepository: NewsRepository) :
     ViewModel() {
 
     val newsLiveData = MutableLiveData<List<News>>()
+    val messageLiveData = MutableLiveData<String>()
     val progressBarLiveData = MutableLiveData<Boolean>()
     val compositeDisposable = CompositeDisposable()
     var page = 0
@@ -40,7 +41,7 @@ class NewsViewModel(private val newsRepository: NewsRepository) :
                 }
 
                 override fun onError(e: Throwable) {
-
+                    messageLiveData.value = "Connection error."
                 }
             })
     }

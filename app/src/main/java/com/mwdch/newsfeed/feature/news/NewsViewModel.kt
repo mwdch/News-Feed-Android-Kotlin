@@ -18,14 +18,15 @@ class NewsViewModel(private val newsRepository: NewsRepository) :
     val newsLiveData = MutableLiveData<List<News>>()
     val progressBarLiveData = MutableLiveData<Boolean>()
     val compositeDisposable = CompositeDisposable()
+    var page = 0
 
     init {
-        getNews(1)
+        getNews()
     }
 
-    fun getNews(page: Int) {
+    fun getNews() {
         progressBarLiveData.value = true
-        newsRepository.getNews(page)
+        newsRepository.getNews(++page)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doFinally { progressBarLiveData.value = false }

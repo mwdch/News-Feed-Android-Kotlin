@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.mwdch.newsfeed.common.EXTRA_KEY_DATA
 import com.mwdch.newsfeed.data.News
 import com.mwdch.newsfeed.databinding.FragmentNewsBinding
 import com.mwdch.newsfeed.feature.detail.NewsDetailActivity
 import io.reactivex.disposables.CompositeDisposable
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class NewsFragment : Fragment(), NewsAdapter.OnNewsListener {
 
@@ -22,6 +24,7 @@ class NewsFragment : Fragment(), NewsAdapter.OnNewsListener {
     private val compositeDisposable = CompositeDisposable()
 
     private val viewModel: NewsViewModel by viewModel()
+
     private var newsAdapter: NewsAdapter? = null
 
     override fun onCreateView(
@@ -46,16 +49,23 @@ class NewsFragment : Fragment(), NewsAdapter.OnNewsListener {
         }
 
         viewModel.newsLiveData.observe(viewLifecycleOwner) {
-            newsAdapter?.newsList = it as ArrayList<News>
+            newsAdapter?.addNewsToExistingList(it)
         }
+
+        binding.rvNews.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (!recyclerView.canScrollVertically(1)) {
+                    viewModel.getNews()
+                }
+            }
+        })
 
         newsAdapter = NewsAdapter()
         newsAdapter?.setListener(this)
         binding.rvNews.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvNews.adapter = newsAdapter
-
-        //TODO when page is scrolling you have to call getNews() with next page
 
     }
 
@@ -78,4 +88,5 @@ class NewsFragment : Fragment(), NewsAdapter.OnNewsListener {
     override fun onFavoriteClick(news: News) {
         viewModel.addToFavorites(news)
     }
+
 }

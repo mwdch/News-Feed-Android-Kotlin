@@ -2,6 +2,7 @@ package com.mwdch.newsfeed.common
 
 import android.app.Application
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.Room
 import com.mwdch.newsfeed.data.db.AppDatabase
 import com.mwdch.newsfeed.data.repo.news.NewsRepository
@@ -40,6 +41,9 @@ class App : Application() {
             androidContext(this@App)
             modules(myModules)
         }
+
+        //to turn off night mode
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
 
 }

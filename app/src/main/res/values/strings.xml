@@ -4,4 +4,5 @@
     <string name="news">News</string>
     <string name="favorites">Favorites</string>
     <string name="favoriteEmptyState">There is no any favorite news</string>
+    <string name="newsDetail">News detail</string>
 </resources>

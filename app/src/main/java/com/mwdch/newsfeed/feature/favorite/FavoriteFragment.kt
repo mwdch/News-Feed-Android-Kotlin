@@ -39,10 +39,10 @@ class FavoriteFragment : Fragment(), FavoriteAdapter.OnFavoriteListener {
         favoriteViewModel.progressBarLiveData.observe(viewLifecycleOwner) {
             if (it) {
                 binding.progressbar.visibility = View.VISIBLE
-                binding.rvNews.visibility = View.GONE
+                binding.parentLayout.visibility = View.GONE
             } else {
                 binding.progressbar.visibility = View.GONE
-                binding.rvNews.visibility = View.VISIBLE
+                binding.parentLayout.visibility = View.VISIBLE
             }
         }
 
@@ -53,9 +53,11 @@ class FavoriteFragment : Fragment(), FavoriteAdapter.OnFavoriteListener {
         favoriteViewModel.favoriteNewsLiveData.observe(viewLifecycleOwner) {
             if (it.isEmpty()) {
                 binding.emptyState.visibility = View.VISIBLE
+                binding.rvNews.visibility = View.GONE
             } else {
                 favoriteAdapter?.newsList = it as ArrayList<News>
                 binding.emptyState.visibility = View.GONE
+                binding.rvNews.visibility = View.VISIBLE
             }
         }
 
@@ -94,6 +96,7 @@ class FavoriteFragment : Fragment(), FavoriteAdapter.OnFavoriteListener {
         favoriteViewModel.deleteFromFavorites(news)
         if (favoriteAdapter?.newsList!!.size == 1) {
             binding.emptyState.visibility = View.VISIBLE
+            binding.rvNews.visibility = View.GONE
         }
     }
 

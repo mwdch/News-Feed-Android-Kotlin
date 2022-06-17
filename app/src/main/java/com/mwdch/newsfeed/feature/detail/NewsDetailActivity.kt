@@ -22,6 +22,10 @@ class NewsDetailActivity : AppCompatActivity() {
         binding = ActivityNewsDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.ivBack.setOnClickListener {
+            finish()
+        }
+
         binding.webView.settings.javaScriptEnabled = true
 
         binding.webView.webViewClient = object : WebViewClient() {
@@ -32,8 +36,6 @@ class NewsDetailActivity : AppCompatActivity() {
                 return true
             }
         }
-
-        setSupportActionBar(binding.toolbar)
 
         viewModel.progressBarLiveData.observe(this) {
             if (it) {

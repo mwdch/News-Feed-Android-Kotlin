@@ -3,10 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Mohammad/AndroidStudioProjects/NewsFeed/app/src/main/res/drawable/ic_back.xml" value="0.1" />
         <entry key="..\:/Users/Mohammad/AndroidStudioProjects/NewsFeed/app/src/main/res/drawable/ic_favorite.xml" value="0.1" />
         <entry key="..\:/Users/Mohammad/AndroidStudioProjects/NewsFeed/app/src/main/res/drawable/ic_favorite_filled.xml" value="0.1" />
         <entry key="..\:/Users/Mohammad/AndroidStudioProjects/NewsFeed/app/src/main/res/layout/activity_main.xml" value="0.19270833333333334" />
-        <entry key="..\:/Users/Mohammad/AndroidStudioProjects/NewsFeed/app/src/main/res/layout/activity_news_detail.xml" value="0.20677083333333332" />
+        <entry key="..\:/Users/Mohammad/AndroidStudioProjects/NewsFeed/app/src/main/res/layout/activity_news_detail.xml" value="0.33" />
         <entry key="..\:/Users/Mohammad/AndroidStudioProjects/NewsFeed/app/src/main/res/layout/fragment_favorite.xml" value="0.25" />
         <entry key="..\:/Users/Mohammad/AndroidStudioProjects/NewsFeed/app/src/main/res/layout/fragment_news.xml" value="0.20677083333333332" />
         <entry key="..\:/Users/Mohammad/AndroidStudioProjects/NewsFeed/app/src/main/res/layout/item_news.xml" value="0.33" />

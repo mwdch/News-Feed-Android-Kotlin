@@ -11,14 +11,16 @@ class NewsRepositoryImpl(
     private val remoteDataSource: NewsDataSource,
     private val localDataSource: NewsLocalDataSource
 ) : NewsRepository {
+
     override fun getNews(page: Int): Single<NewsResponse> =
         localDataSource.getFavoriteNews()
             .flatMap { favoriteNews ->
                 remoteDataSource.getNews(page).doOnSuccess {
+                    //finding those news which is favorite from database
                     val favoriteNewsIds = favoriteNews.map { news ->
                         news.id
                     }
-
+                    //changing the isFavorite value of each news for showing filled favorite icon
                     it.response.news.forEach { news ->
                         if (favoriteNewsIds.contains(news.id))
                             news.isFavorite = true

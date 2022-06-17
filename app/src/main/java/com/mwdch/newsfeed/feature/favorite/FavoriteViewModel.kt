@@ -14,7 +14,7 @@ import io.reactivex.schedulers.Schedulers
 class FavoriteViewModel(private val newsRepository: NewsRepository) :
     ViewModel() {
 
-    val newsLiveData = MutableLiveData<List<News>>()
+    val favoriteNewsLiveData = MutableLiveData<List<News>>()
     val messageLiveData = MutableLiveData<String>()
     val progressBarLiveData = MutableLiveData<Boolean>()
     val compositeDisposable = CompositeDisposable()
@@ -31,7 +31,7 @@ class FavoriteViewModel(private val newsRepository: NewsRepository) :
                 }
 
                 override fun onSuccess(t: List<News>) {
-                    newsLiveData.value = t
+                    favoriteNewsLiveData.value = t
                 }
 
                 override fun onError(e: Throwable) {

@@ -12,12 +12,17 @@ class NewsAdapter :
 
     private lateinit var listener: OnNewsListener
 
-    private val newsList = ArrayList<News>()
+    var newsList = ArrayList<News>()
 
     fun addNewsToExistingList(newsList: List<News>) {
         val lastSize = itemCount
         this.newsList.addAll(newsList)
         notifyItemRangeInserted(lastSize, itemCount)
+    }
+
+    fun setNewsList(newsList: List<News>) {
+        this.newsList = newsList as ArrayList<News>
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {

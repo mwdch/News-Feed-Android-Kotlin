@@ -2,7 +2,6 @@ package com.mwdch.newsfeed.feature.favorite
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,7 @@ class FavoriteFragment : Fragment(), FavoriteAdapter.OnFavoriteListener {
 
     private val compositeDisposable = CompositeDisposable()
 
-    private val viewModel: FavoriteViewModel by viewModel()
+    private val favoriteViewModel: FavoriteViewModel by viewModel()
     private var favoriteAdapter: FavoriteAdapter? = null
 
     override fun onCreateView(
@@ -37,9 +36,7 @@ class FavoriteFragment : Fragment(), FavoriteAdapter.OnFavoriteListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getFavorites()
-
-        viewModel.progressBarLiveData.observe(viewLifecycleOwner) {
+        favoriteViewModel.progressBarLiveData.observe(viewLifecycleOwner) {
             if (it) {
                 binding.progressbar.visibility = View.VISIBLE
                 binding.rvNews.visibility = View.GONE
@@ -49,11 +46,11 @@ class FavoriteFragment : Fragment(), FavoriteAdapter.OnFavoriteListener {
             }
         }
 
-        viewModel.messageLiveData.observe(viewLifecycleOwner) {
+        favoriteViewModel.messageLiveData.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
         }
 
-        viewModel.newsLiveData.observe(viewLifecycleOwner) {
+        favoriteViewModel.favoriteNewsLiveData.observe(viewLifecycleOwner) {
             if (it.isEmpty()) {
                 binding.emptyState.visibility = View.VISIBLE
             } else {
@@ -62,11 +59,19 @@ class FavoriteFragment : Fragment(), FavoriteAdapter.OnFavoriteListener {
             }
         }
 
+        //initializing adapter and recyclerview
         favoriteAdapter = FavoriteAdapter()
         favoriteAdapter?.setListener(this)
         binding.rvNews.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvNews.adapter = favoriteAdapter
+    }
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+
+        if (isVisibleToUser)
+            favoriteViewModel.getFavorites()
     }
 
     override fun onDestroy() {
@@ -86,7 +91,7 @@ class FavoriteFragment : Fragment(), FavoriteAdapter.OnFavoriteListener {
     }
 
     override fun onFavoriteDeleteClick(news: News) {
-        viewModel.deleteFromFavorites(news)
+        favoriteViewModel.deleteFromFavorites(news)
         if (favoriteAdapter?.newsList!!.size == 1) {
             binding.emptyState.visibility = View.VISIBLE
         }

@@ -6,9 +6,7 @@ import androidx.room.Room
 import com.mwdch.newsfeed.data.db.AppDatabase
 import com.mwdch.newsfeed.data.repo.news.NewsRepository
 import com.mwdch.newsfeed.data.repo.news.NewsRepositoryImpl
-import com.mwdch.newsfeed.data.source.news.NewsLocalDataSource
 import com.mwdch.newsfeed.data.source.news.NewsRemoteDataSource
-import com.mwdch.newsfeed.feature.detail.NewsDetailActivity
 import com.mwdch.newsfeed.feature.detail.NewsDetailViewModel
 import com.mwdch.newsfeed.feature.favorite.FavoriteViewModel
 import com.mwdch.newsfeed.feature.news.NewsViewModel

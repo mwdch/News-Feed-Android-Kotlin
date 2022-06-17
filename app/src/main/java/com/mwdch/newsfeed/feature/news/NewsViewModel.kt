@@ -12,18 +12,13 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
-class NewsViewModel(private val newsRepository: NewsRepository) :
-    ViewModel() {
+class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
 
     val newsLiveData = MutableLiveData<List<News>>()
     val messageLiveData = MutableLiveData<String>()
     val progressBarLiveData = MutableLiveData<Boolean>()
     val compositeDisposable = CompositeDisposable()
     var page = 0
-
-    init {
-        getNews()
-    }
 
     fun getNews() {
         progressBarLiveData.value = true

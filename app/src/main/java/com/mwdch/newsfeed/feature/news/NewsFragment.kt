@@ -26,7 +26,6 @@ class NewsFragment : Fragment(), NewsAdapter.OnNewsListener {
     private val compositeDisposable = CompositeDisposable()
 
     private val newsViewModel: NewsViewModel by viewModel()
-    private val favoriteViewModel: FavoriteViewModel by viewModel()
 
     private var newsAdapter: NewsAdapter? = null
 
@@ -60,7 +59,10 @@ class NewsFragment : Fragment(), NewsAdapter.OnNewsListener {
         }
 
         newsViewModel.newsLiveData.observe(viewLifecycleOwner) {
-            newsAdapter?.addNewsToExistingList(it)
+            if (newsViewModel.page == 1)
+                newsAdapter?.setNewsList(it)
+            else
+                newsAdapter?.addNewsToExistingList(it)
         }
 
         binding.rvNews.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -73,12 +75,22 @@ class NewsFragment : Fragment(), NewsAdapter.OnNewsListener {
             }
         })
 
+        //initializing adapter and recyclerview
         newsAdapter = NewsAdapter()
         newsAdapter?.setListener(this)
         binding.rvNews.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvNews.adapter = newsAdapter
 
+    }
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+
+        if (isVisibleToUser) {
+            newsViewModel.page = 0
+            newsViewModel.getNews()
+        }
     }
 
     override fun onDestroy() {
@@ -99,7 +111,6 @@ class NewsFragment : Fragment(), NewsAdapter.OnNewsListener {
 
     override fun onFavoriteClick(news: News) {
         newsViewModel.addToFavorites(news)
-        favoriteViewModel.getFavorites()
     }
 
 }

@@ -3,21 +3,21 @@ package com.mwdch.newsfeed.data.source.news
 import androidx.room.*
 import com.mwdch.newsfeed.data.News
 import com.mwdch.newsfeed.data.NewsResponse
-import io.reactivex.Completable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NewsLocalDataSource : NewsDataSource {
-    override fun getNews(page: Int): Single<NewsResponse> {
+
+    override fun getNews(page: Int): Flow<NewsResponse> {
         TODO("Not yet implemented")
     }
 
     @Query("SELECT * FROM tbl_news")
-    override fun getFavoriteNews(): Single<List<News>>
+    override fun getFavoriteNews(): Flow<List<News>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    override fun addToFavorites(news: News): Completable
+    override suspend fun addToFavorites(news: News)
 
     @Delete
-    override fun deleteFromFavorites(news: News): Completable
+    override suspend fun deleteFromFavorites(news: News)
 }

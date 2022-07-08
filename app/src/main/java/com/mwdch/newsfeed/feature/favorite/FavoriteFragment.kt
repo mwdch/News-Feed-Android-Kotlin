@@ -73,7 +73,7 @@ class FavoriteFragment : Fragment(), FavoriteAdapter.OnFavoriteListener {
         super.setUserVisibleHint(isVisibleToUser)
 
         if (isVisibleToUser)
-            favoriteViewModel.getFavorites()
+            favoriteViewModel.getFavorite()
     }
 
     override fun onDestroy() {

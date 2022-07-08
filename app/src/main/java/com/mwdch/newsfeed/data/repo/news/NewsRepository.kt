@@ -2,16 +2,15 @@ package com.mwdch.newsfeed.data.repo.news
 
 import com.mwdch.newsfeed.data.News
 import com.mwdch.newsfeed.data.NewsResponse
-import io.reactivex.Completable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 
 interface NewsRepository {
 
-    fun getNews(page: Int): Single<NewsResponse>
+    fun getNews(page: Int): Flow<List<News>>
 
-    fun getFavoriteNews(): Single<List<News>>
+    fun getFavoriteNews(): Flow<List<News>>
 
-    fun addToFavorites(news: News): Completable
+    suspend fun addToFavorites(news: News)
 
-    fun deleteFromFavorites(news: News): Completable
+    suspend fun deleteFromFavorites(news: News)
 }

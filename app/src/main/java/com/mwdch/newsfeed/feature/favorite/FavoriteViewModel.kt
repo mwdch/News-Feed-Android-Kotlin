@@ -1,67 +1,49 @@
 package com.mwdch.newsfeed.feature.favorite
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.mwdch.newsfeed.data.News
 import com.mwdch.newsfeed.data.repo.news.NewsRepository
-import io.reactivex.CompletableObserver
-import io.reactivex.SingleObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.launch
 
 class FavoriteViewModel(private val newsRepository: NewsRepository) :
     ViewModel() {
 
-    val favoriteNewsLiveData = MutableLiveData<List<News>>()
     val messageLiveData = MutableLiveData<String>()
     val progressBarLiveData = MutableLiveData<Boolean>()
-    val compositeDisposable = CompositeDisposable()
-
-    fun getFavorites() {
-        progressBarLiveData.value = true
-        newsRepository.getFavoriteNews()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doFinally { progressBarLiveData.value = false }
-            .subscribe(object : SingleObserver<List<News>> {
-                override fun onSubscribe(d: Disposable) {
-                    compositeDisposable.add(d)
-                }
-
-                override fun onSuccess(t: List<News>) {
-                    favoriteNewsLiveData.value = t
-                }
-
-                override fun onError(e: Throwable) {
-                    messageLiveData.value = "Cannot get Favorites"
-                }
-            })
-    }
+    val favoriteNewsLiveData = MutableLiveData<List<News>>()
 
     fun deleteFromFavorites(news: News) {
-        newsRepository.deleteFromFavorites(news)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : CompletableObserver {
-                override fun onSubscribe(d: Disposable) {
-                    compositeDisposable.add(d)
-                }
+        val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+            Log.e("FavoriteViewModel", throwable.message ?: "")
+            messageLiveData.value = "news was not removed."
+        }
 
-                override fun onComplete() {
-                    news.isFavorite = false
-                    messageLiveData.value = "news was successfully removed."
-                }
-
-                override fun onError(e: Throwable) {
-                    messageLiveData.value = "news was not removed."
-                }
-            })
+        viewModelScope.launch(exceptionHandler) {
+            newsRepository.deleteFromFavorites(news)
+            news.isFavorite = false
+            messageLiveData.value = "news was successfully removed."
+        }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        compositeDisposable.clear()
+    fun getFavorite() {
+        progressBarLiveData.value = true
+        viewModelScope.launch {
+            newsRepository.getFavoriteNews()
+                .catch {
+                    messageLiveData.value = "Cannot get Favorites"
+                }
+                .onCompletion {
+                    progressBarLiveData.value = false
+                }
+                .collect {
+                    favoriteNewsLiveData.value = it
+                }
+        }
     }
 }

@@ -1,85 +1,54 @@
 package com.mwdch.newsfeed.feature.news
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.mwdch.newsfeed.data.News
-import com.mwdch.newsfeed.data.NewsResponse
 import com.mwdch.newsfeed.data.repo.news.NewsRepository
-import io.reactivex.CompletableObserver
-import io.reactivex.SingleObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.launch
 
 class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
 
-    val newsLiveData = MutableLiveData<List<News>>()
     val messageLiveData = MutableLiveData<String>()
     val progressBarLiveData = MutableLiveData<Boolean>()
-    val compositeDisposable = CompositeDisposable()
     var page = 0
+
+    val newsLiveData = MutableLiveData<List<News>>()
+
+    fun addToFavorites(news: News) {
+        val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+            Log.e("FavoriteViewModel", throwable.message ?: "")
+        }
+
+        viewModelScope.launch(exceptionHandler) {
+            if (news.isFavorite) {
+                newsRepository.deleteFromFavorites(news)
+                news.isFavorite = false
+            } else {
+                newsRepository.addToFavorites(news)
+                news.isFavorite = true
+            }
+        }
+    }
 
     fun getNews() {
         progressBarLiveData.value = true
-        newsRepository.getNews(++page)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doFinally { progressBarLiveData.value = false }
-            .subscribe(object : SingleObserver<NewsResponse> {
-                override fun onSubscribe(d: Disposable) {
-                    compositeDisposable.add(d)
-                }
-
-                override fun onSuccess(t: NewsResponse) {
-                    newsLiveData.value = t.response.news
-                }
-
-                override fun onError(e: Throwable) {
+        viewModelScope.launch {
+            newsRepository.getNews(++page)
+                .catch {
                     messageLiveData.value = "Connection error."
                 }
-            })
+                .onCompletion {
+                    progressBarLiveData.value = false
+                }
+                .collect {
+                    newsLiveData.value = it
+                }
+        }
     }
 
-    fun addToFavorites(news: News) {
-        if (news.isFavorite)
-            newsRepository.deleteFromFavorites(news)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : CompletableObserver {
-                    override fun onSubscribe(d: Disposable) {
-                        compositeDisposable.add(d)
-                    }
-
-                    override fun onComplete() {
-                        news.isFavorite = false
-                    }
-
-                    override fun onError(e: Throwable) {
-
-                    }
-                })
-        else
-            newsRepository.addToFavorites(news)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : CompletableObserver {
-                    override fun onSubscribe(d: Disposable) {
-                        compositeDisposable.add(d)
-                    }
-
-                    override fun onComplete() {
-                        news.isFavorite = true
-                    }
-
-                    override fun onError(e: Throwable) {
-
-                    }
-                })
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        compositeDisposable.clear()
-    }
 }
